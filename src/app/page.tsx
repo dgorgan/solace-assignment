@@ -13,7 +13,7 @@ function matchesAdvocate(a: Advocate, raw: string) {
     a.lastName,
     a.city,
     a.degree,
-    a.phoneNumber,
+    String(a.phoneNumber),
     ...(Array.isArray(a.specialties) ? a.specialties : []),
   ].filter(Boolean).join(' ').toLowerCase();
   return yearsHit || haystack.includes(q);
