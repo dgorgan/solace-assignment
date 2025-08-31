@@ -39,3 +39,46 @@ npx drizzle-kit push
 ```bash
 curl -X POST http://localhost:3000/api/seed
 ```
+
+## API Endpoints
+
+### GET /api/advocates
+
+Retrieves a paginated list of advocates with optional search and sorting capabilities.
+
+**Query Parameters:**
+- `page` (number, default: 1) - Page number for pagination
+- `pageSize` (number, default: 25, max: 100) - Number of items per page
+- `search` (string, optional) - Case-insensitive search term for filtering advocates
+- `sort` (string, default: 'lastName') - Sort column (allowed: 'lastName', 'city', 'yearsOfExperience')
+- `dir` (string, default: 'asc') - Sort direction ('asc' or 'desc')
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "firstName": "string",
+      "lastName": "string", 
+      "city": "string",
+      "degree": "string",
+      "specialties": ["string"],
+      "yearsOfExperience": "number",
+      "phoneNumber": "string"
+    }
+  ],
+  "page": "number",
+  "pageSize": "number", 
+  "total": "number",
+  "hasMore": "boolean"
+}
+```
+
+**Example:**
+```
+GET /api/advocates?page=2&pageSize=25&search=jane&sort=lastName&dir=desc
+```
+
+**Cache Headers:**
+- `Cache-Control: public, max-age=30, stale-while-revalidate=60`

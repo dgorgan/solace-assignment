@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Advocate } from "../features/advocates/types";
+import { formatUSPhone } from "../features/advocates/normalize";
 
 function matchesAdvocate(a: Advocate, raw: string) {
   const q = (raw ?? '').trim().toLowerCase();
@@ -95,7 +96,7 @@ export default function Home() {
                   ))}
                 </td>
                 <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
+                <td>{formatUSPhone(String(advocate.phoneNumber))}</td>
               </tr>
             );
           })}
