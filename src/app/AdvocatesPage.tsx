@@ -5,17 +5,25 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "../lib/useDebounce";
 import { formatUSPhone } from "../features/advocates/normalize";
 import { useAdvocates } from "../features/advocates/hooks/useAdvocates";
+import { 
+  DEFAULT_PAGE, 
+  DEFAULT_PAGE_SIZE, 
+  DEFAULT_SORT, 
+  DEFAULT_DIR,
+  type SortColumn,
+  type SortDir 
+} from "../features/advocates/constants";
 
 export default function AdvocatesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
   // Read URL params with defaults
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const pageSize = parseInt(searchParams.get('pageSize') || '25', 10);
+  const page = parseInt(searchParams.get('page') || String(DEFAULT_PAGE), 10);
+  const pageSize = parseInt(searchParams.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
   const urlSearch = searchParams.get('search') || '';
-  const sort = (searchParams.get('sort') as "lastName" | "city" | "yearsOfExperience") || 'lastName';
-  const dir = (searchParams.get('dir') as "asc" | "desc") || 'asc';
+  const sort = (searchParams.get('sort') as SortColumn) || DEFAULT_SORT;
+  const dir = (searchParams.get('dir') as SortDir) || DEFAULT_DIR;
 
   // Local search state for controlled input
   const [searchInput, setSearchInput] = useState(urlSearch);

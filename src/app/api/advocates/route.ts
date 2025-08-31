@@ -2,21 +2,29 @@ import { advocateData } from "../../../db/seed/advocates";
 import { parseIntParam, parseDir, parseString } from "../../../lib/params";
 import { Advocate } from "../../../features/advocates/types";
 import { normalizeAdvocate } from "../../../features/advocates/normalize";
+import { 
+  DEFAULT_PAGE, 
+  DEFAULT_PAGE_SIZE, 
+  MAX_PAGE_SIZE, 
+  SORTABLE_COLUMNS, 
+  DEFAULT_SORT, 
+  DEFAULT_DIR,
+  type SortColumn 
+} from "../../../features/advocates/constants";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   
   // Parse query parameters with defaults and validation
-  const page = parseIntParam(searchParams.get('page'), 1, 1, Number.MAX_SAFE_INTEGER);
-  const pageSize = parseIntParam(searchParams.get('pageSize'), 25, 1, 100);
+  const page = parseIntParam(searchParams.get('page'), DEFAULT_PAGE, 1, Number.MAX_SAFE_INTEGER);
+  const pageSize = parseIntParam(searchParams.get('pageSize'), DEFAULT_PAGE_SIZE, 1, MAX_PAGE_SIZE);
   const search = parseString(searchParams.get('search'), 100);
   const sortParam = searchParams.get('sort');
   const dirParam = parseDir(searchParams.get('dir'));
   
   // Whitelist sort columns
-  const validSortColumns = ['lastName', 'city', 'yearsOfExperience'];
-  const sort = validSortColumns.includes(sortParam || '') ? sortParam : 'lastName';
-  const dir = dirParam;
+  const sort: SortColumn = SORTABLE_COLUMNS.includes(sortParam as SortColumn) ? sortParam as SortColumn : DEFAULT_SORT;
+  const dir = dirParam || DEFAULT_DIR;
 
   // Normalize raw data at API boundary
   let data: Advocate[] = advocateData.map(normalizeAdvocate);

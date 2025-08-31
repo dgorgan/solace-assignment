@@ -1,11 +1,12 @@
 import type { Advocate } from "@/features/advocates/types";
+import type { SortColumn, SortDir } from "@/features/advocates/constants";
 
 export type AdvocatesQuery = {
   page: number;
   pageSize: number;
   search?: string;
-  sort?: "lastName" | "city" | "yearsOfExperience";
-  dir?: "asc" | "desc";
+  sort?: SortColumn;
+  dir?: SortDir;
 };
 
 export type AdvocatesResponse = {
