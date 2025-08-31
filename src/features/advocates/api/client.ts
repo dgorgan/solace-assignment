@@ -18,6 +18,8 @@ export type AdvocatesResponse = {
   hasMore: boolean;
 };
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+
 export async function fetchAdvocates(params: AdvocatesQuery): Promise<AdvocatesResponse> {
   const qs = qsp({
     page: params.page,
@@ -26,7 +28,7 @@ export async function fetchAdvocates(params: AdvocatesQuery): Promise<AdvocatesR
     sort: params.sort,
     dir: params.dir
   });
-  const res = await fetch(`/api/advocates?${qs}`);
+  const res = await fetch(`${API_BASE}/api/advocates?${qs}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({} as any));
     throw new Error(body?.error?.message || body?.message || `Failed to fetch advocates (${res.status})`);
