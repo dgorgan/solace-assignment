@@ -10,7 +10,6 @@ export function useAdvocates(params: AdvocatesQuery) {
   return useQuery<AdvocatesResponse>({
     queryKey,
     queryFn: () => fetchAdvocates({ ...params, search: debouncedSearch || undefined }),
-    keepPreviousData: true,
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   });
