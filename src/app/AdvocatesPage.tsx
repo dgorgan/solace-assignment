@@ -13,6 +13,7 @@ import {
   type SortColumn,
   type SortDir 
 } from "../features/advocates/constants";
+import { HeroHeader } from "../features/advocates/components/HeroHeader";
 import { PageHeader } from "../features/advocates/components/PageHeader";
 import { SearchBar } from "../features/advocates/components/SearchBar";
 import { EmptyState } from "../features/advocates/components/EmptyState";
@@ -66,6 +67,7 @@ export default function AdvocatesPage() {
 
   return (
     <main>
+      <HeroHeader />
       <PageHeader />
       <SearchBar 
         value={searchInput} 
@@ -73,19 +75,11 @@ export default function AdvocatesPage() {
         onReset={() => setSearchInput("")} 
       />
       
-      {isLoading && (
-        <div className="max-w-6xl mx-auto p-6">
-          <div className="card p-6">Loading advocates...</div>
+      {error ? (
+        <div className="max-w-none mx-auto px-6 sm:px-12 py-6">
+          <div className="card p-6 text-red-600 max-w-[90vw] mx-auto">Error: {error.message}</div>
         </div>
-      )}
-      
-      {error && (
-        <div className="max-w-6xl mx-auto p-6">
-          <div className="card p-6 text-red-600">Error: {error.message}</div>
-        </div>
-      )}
-      
-      {data?.total === 0 ? (
+      ) : data?.total === 0 ? (
         <EmptyState term={urlSearch} />
       ) : data ? (
         <AdvocatesTable
@@ -96,10 +90,20 @@ export default function AdvocatesPage() {
           hasMore={data.hasMore}
           sort={sort} 
           dir={dir}
+          isLoading={isLoading}
           onSortChange={(col) => updateURL(col === sort ? { dir: dir === "asc" ? "desc" : "asc" } : { sort: col, dir: "asc" })}
           onPageChange={(p) => updateURL({ page: p })}
           onPageSizeChange={(n) => updateURL({ pageSize: n, page: 1 })}
         />
+      ) : isLoading ? (
+        <div className="max-w-none mx-auto px-6 sm:px-12 py-6">
+          <div className="card p-6 text-center max-w-[90vw] mx-auto">
+            <div className="flex items-center justify-center gap-2 text-primary">
+              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+              <span>Loading advocates...</span>
+            </div>
+          </div>
+        </div>
       ) : null}
     </main>
   );

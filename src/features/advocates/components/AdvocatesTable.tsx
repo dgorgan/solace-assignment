@@ -7,15 +7,15 @@ type Sort="lastName"|"city"|"yearsOfExperience";
 type Dir="asc"|"desc";
 
 export function AdvocatesTable({
-  rows,total,page,pageSize,sort,dir,hasMore,
+  rows,total,page,pageSize,sort,dir,hasMore,isLoading,
   onSortChange,onPageChange,onPageSizeChange
 }:{
-  rows:Advocate[]; total:number; page:number; pageSize:number; sort:Sort; dir:Dir; hasMore:boolean;
+  rows:Advocate[]; total:number; page:number; pageSize:number; sort:Sort; dir:Dir; hasMore:boolean; isLoading?:boolean;
   onSortChange:(s:Sort)=>void; onPageChange:(p:number)=>void; onPageSizeChange:(n:number)=>void;
 }){
   return (
-    <div className="max-w-6xl mx-auto p-3 sm:p-6">
-      <div className="card p-2 sm:p-4">
+    <div className="max-w-none mx-auto px-3 sm:px-6 py-3 sm:py-6" data-section="advocates-table">
+      <div className="card p-2 sm:p-4 max-w-[90vw] mx-auto">
         <div className="mb-3 flex flex-col sm:flex-row sm:items-center gap-3">
           <label className="text-sm">
             Page size
@@ -29,9 +29,17 @@ export function AdvocatesTable({
           </div>
         </div>
 
-        <div className="border rounded overflow-x-auto">
+        <div className="border rounded overflow-x-auto relative">
+          {isLoading && (
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex items-center justify-center">
+              <div className="flex items-center gap-2 text-primary">
+                <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                <span className="text-sm font-medium">Updating...</span>
+              </div>
+            </div>
+          )}
           <div className="max-h-[520px] overflow-y-auto">
-            <table className="w-full min-w-[800px] border-collapse">
+            <table className="w-full min-w-[1000px] border-collapse">
               <colgroup>
                 <col className="w-[100px]" />
                 <col className="w-[120px]" />
@@ -61,13 +69,13 @@ export function AdvocatesTable({
                   <td className="py-2 px-3 truncate">{a.city}</td>
                   <td className="py-2 px-3 truncate">{a.degree}</td>
                   <td className="py-2 px-3">
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto sm:max-h-none sm:overflow-visible">
                       {Array.isArray(a.specialties) && a.specialties.map((s,i)=>(<span key={i} className="chip">{s}</span>))}
                     </div>
                   </td>
-                  <td className="py-2 px-3 whitespace-nowrap">{a.yearsOfExperience}</td>
+                  <td className="py-2 px-3 whitespace-nowrap text-gold font-semibold">{a.yearsOfExperience}</td>
                   <td className="py-2 px-3 truncate">
-                    <a href={`tel:${a.phoneNumber}`} className="text-gray-700 hover:text-brand transition-colors">
+                    <a href={`tel:${a.phoneNumber}`} className="text-gray-700 hover:text-primary transition-colors">
                       {formatUSPhone(a.phoneNumber)}
                     </a>
                   </td>
@@ -78,10 +86,22 @@ export function AdvocatesTable({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-3">
-          <button onClick={()=>onPageChange(Math.max(1, page-1))} disabled={page<=1} className="btn btn-ghost focus-brand disabled:opacity-50">Previous</button>
-          <span className="text-sm">Page {page}</span>
-          <button onClick={()=>onPageChange(page+1)} disabled={!hasMore} className="btn btn-ghost focus-brand disabled:opacity-50">Next</button>
+        <div className="flex items-center gap-3 mt-4 justify-center">
+          <button 
+            onClick={()=>onPageChange(Math.max(1, page-1))} 
+            disabled={page<=1} 
+            className="btn-secondary focus-brand disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <span className="text-sm font-medium px-4 py-2">Page {page}</span>
+          <button 
+            onClick={()=>onPageChange(page+1)} 
+            disabled={!hasMore} 
+            className="btn-secondary focus-brand disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
