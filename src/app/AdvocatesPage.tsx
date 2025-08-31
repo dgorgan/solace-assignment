@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDebounce } from "../lib/useDebounce";
+import { qsp } from "../lib/qsp";
 import { formatUSPhone } from "../features/advocates/normalize";
 import { useAdvocates } from "../features/advocates/hooks/useAdvocates";
 import { 
@@ -54,15 +55,10 @@ export default function AdvocatesPage() {
   const { data, isLoading, error } = useAdvocates({ page, pageSize, search: urlSearch, sort, dir });
 
   const updateURL = (updates: Record<string, string | number>) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, String(value));
-      } else {
-        newParams.delete(key);
-      }
-    });
-    router.replace(`/?${newParams.toString()}`, { scroll: false });
+    const currentParams = Object.fromEntries(searchParams.entries());
+    const newParams = { ...currentParams, ...updates };
+    const qs = qsp(newParams);
+    router.replace(`/?${qs}`, { scroll: false });
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
