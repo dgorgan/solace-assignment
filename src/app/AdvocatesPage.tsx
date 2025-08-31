@@ -1,6 +1,8 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useDebounce } from "../lib/useDebounce";
 import { formatUSPhone } from "../features/advocates/normalize";
 import { useAdvocates } from "../features/advocates/hooks/useAdvocates";
 
@@ -11,12 +13,37 @@ export default function AdvocatesPage() {
   // Read URL params with defaults
   const page = parseInt(searchParams.get('page') || '1', 10);
   const pageSize = parseInt(searchParams.get('pageSize') || '25', 10);
-  const search = searchParams.get('search') || '';
+  const urlSearch = searchParams.get('search') || '';
   const sort = (searchParams.get('sort') as "lastName" | "city" | "yearsOfExperience") || 'lastName';
   const dir = (searchParams.get('dir') as "asc" | "desc") || 'asc';
 
-  // Fetch data using the hook
-  const { data, isLoading, error } = useAdvocates({ page, pageSize, search, sort, dir });
+  // Local search state for controlled input
+  const [searchInput, setSearchInput] = useState(urlSearch);
+  
+  // Debounce the search input for navigation
+  const debouncedSearch = useDebounce(searchInput, 300);
+  
+  // Update URL when debounced search changes
+  useEffect(() => {
+    if (debouncedSearch !== urlSearch) {
+      const newParams = new URLSearchParams(searchParams.toString());
+      if (debouncedSearch) {
+        newParams.set('search', debouncedSearch);
+      } else {
+        newParams.delete('search');
+      }
+      newParams.set('page', '1'); // Reset to page 1 on search
+      router.replace(`/?${newParams.toString()}`, { scroll: false });
+    }
+  }, [debouncedSearch, urlSearch, searchParams, router]);
+
+  // Sync input with URL when URL changes (back/forward navigation)
+  useEffect(() => {
+    setSearchInput(urlSearch);
+  }, [urlSearch]);
+
+  // Fetch data using the hook (uses URL params, not local input state)
+  const { data, isLoading, error } = useAdvocates({ page, pageSize, search: urlSearch, sort, dir });
 
   const updateURL = (updates: Record<string, string | number>) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -27,16 +54,15 @@ export default function AdvocatesPage() {
         newParams.delete(key);
       }
     });
-    router.replace(`/?${newParams.toString()}`);
+    router.replace(`/?${newParams.toString()}`, { scroll: false });
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value;
-    updateURL({ search: searchTerm, page: 1 });
+    setSearchInput(e.target.value);
   };
 
   const onClick = () => {
-    updateURL({ search: '', page: 1 });
+    setSearchInput('');
   };
 
   return (
@@ -47,12 +73,13 @@ export default function AdvocatesPage() {
       <div>
         <p>Search</p>
         <p>
-          Searching for: <span id="search-term">{search}</span>
+          Searching for: <span id="search-term">{urlSearch}</span>
         </p>
         <input 
           style={{ border: "1px solid black" }} 
-          value={search}
+          value={searchInput}
           onChange={onChange} 
+          placeholder="Type to search..."
         />
         <button onClick={onClick}>Reset Search</button>
       </div>
