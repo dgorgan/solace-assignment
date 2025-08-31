@@ -1,6 +1,15 @@
 ## Solace Candidate Assignment
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+A modern advocate directory application built with Next.js, featuring server-side pagination, search, and sorting with a polished Solace-branded UI.
+
+### Features
+
+- **Server-side data handling**: Pagination, search, and sorting handled on the backend
+- **Responsive design**: Optimized for desktop and mobile with Solace brand styling
+- **Accessibility**: Keyboard navigation, ARIA labels, and semantic HTML
+- **URL-driven state**: Search and sort parameters persist in the URL
+- **Real-time search**: Debounced search with instant results
+- **Modern stack**: Next.js 14, TypeScript, Tailwind CSS, React Query
 
 ## Getting Started
 
@@ -82,3 +91,13 @@ GET /api/advocates?page=2&pageSize=25&search=jane&sort=lastName&dir=desc
 
 **Cache Headers:**
 - `Cache-Control: public, max-age=30, stale-while-revalidate=60`
+
+## Implementation Notes
+
+This project was completed as a 2-hour coding challenge with the following approach:
+
+1. **Foundation**: Fixed hydration issues, normalized API responses, added pagination/search/sort
+2. **Data Layer**: Integrated React Query, debounced URL-driven state management
+3. **UX Polish**: Applied Solace branding, responsive design, accessibility improvements
+
+See `DISCUSSION.md` for detailed implementation notes and architectural decisions.

@@ -4,7 +4,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDebounce } from "../lib/useDebounce";
 import { qsp } from "../lib/qsp";
-import { formatUSPhone } from "../features/advocates/normalize";
 import { useAdvocates } from "../features/advocates/hooks/useAdvocates";
 import { 
   DEFAULT_PAGE, 
@@ -14,6 +13,11 @@ import {
   type SortColumn,
   type SortDir 
 } from "../features/advocates/constants";
+import { HeroHeader } from "../features/advocates/components/HeroHeader";
+import { PageHeader } from "../features/advocates/components/PageHeader";
+import { SearchBar } from "../features/advocates/components/SearchBar";
+import { EmptyState } from "../features/advocates/components/EmptyState";
+import { AdvocatesTable } from "../features/advocates/components/AdvocatesTable";
 
 export default function AdvocatesPage() {
   const router = useRouter();
@@ -61,104 +65,46 @@ export default function AdvocatesPage() {
     router.replace(`/?${qs}`, { scroll: false });
   };
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-  };
-
-  const onClick = () => {
-    setSearchInput('');
-  };
-
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term">{urlSearch}</span>
-        </p>
-        <input 
-          style={{ border: "1px solid black" }} 
-          value={searchInput}
-          onChange={onChange} 
-          placeholder="Type to search..."
+    <main>
+      <HeroHeader />
+      <PageHeader />
+      <SearchBar 
+        value={searchInput} 
+        onChange={setSearchInput} 
+        onReset={() => setSearchInput("")} 
+      />
+      
+      {error ? (
+        <div className="max-w-none mx-auto px-6 sm:px-12 py-6">
+          <div className="card p-6 text-red-600 max-w-[90vw] mx-auto">Error: {error.message}</div>
+        </div>
+      ) : data?.total === 0 ? (
+        <EmptyState term={urlSearch} />
+      ) : data ? (
+        <AdvocatesTable
+          rows={data.data} 
+          total={data.total}
+          page={page} 
+          pageSize={pageSize} 
+          hasMore={data.hasMore}
+          sort={sort} 
+          dir={dir}
+          isLoading={isLoading}
+          onSortChange={(col) => updateURL(col === sort ? { dir: dir === "asc" ? "desc" : "asc" } : { sort: col, dir: "asc" })}
+          onPageChange={(p) => updateURL({ page: p })}
+          onPageSizeChange={(n) => updateURL({ pageSize: n, page: 1 })}
         />
-        <button onClick={onClick}>Reset Search</button>
-      </div>
-      <br />
-      <br />
-      
-      {isLoading && <div>Loading advocates...</div>}
-      {error && <div>Error: {error.message}</div>}
-      {data && (
-        <>
-          <div>
-            Showing {data.data.length} of {data.total} advocates 
-            (Page {data.page} of {Math.ceil(data.total / data.pageSize)})
+      ) : isLoading ? (
+        <div className="max-w-none mx-auto px-6 sm:px-12 py-6">
+          <div className="card p-6 text-center max-w-[90vw] mx-auto">
+            <div className="flex items-center justify-center gap-2 text-primary">
+              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+              <span>Loading advocates...</span>
+            </div>
           </div>
-          <br />
-          <table>
-            <thead>
-              <tr>
-                <th>First Name</th>
-                <th onClick={() => updateURL({ sort: 'lastName', dir: sort === 'lastName' && dir === 'asc' ? 'desc' : 'asc' })}>
-                  Last Name {sort === 'lastName' && (dir === 'asc' ? '↑' : '↓')}
-                </th>
-                <th onClick={() => updateURL({ sort: 'city', dir: sort === 'city' && dir === 'asc' ? 'desc' : 'asc' })}>
-                  City {sort === 'city' && (dir === 'asc' ? '↑' : '↓')}
-                </th>
-                <th>Degree</th>
-                <th>Specialties</th>
-                <th onClick={() => updateURL({ sort: 'yearsOfExperience', dir: sort === 'yearsOfExperience' && dir === 'asc' ? 'desc' : 'asc' })}>
-                  Years of Experience {sort === 'yearsOfExperience' && (dir === 'asc' ? '↑' : '↓')}
-                </th>
-                <th>Phone Number</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.data.map((advocate) => {
-                return (
-                  <tr key={advocate.id}>
-                    <td>{advocate.firstName}</td>
-                    <td>{advocate.lastName}</td>
-                    <td>{advocate.city}</td>
-                    <td>{advocate.degree}</td>
-                    <td>
-                      {advocate.specialties && advocate.specialties.map((s, specIndex) => (
-                        <div key={specIndex}>{s}</div>
-                      ))}
-                    </td>
-                    <td>{advocate.yearsOfExperience}</td>
-                    <td>{formatUSPhone(advocate.phoneNumber)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          
-          <div style={{ marginTop: '20px' }}>
-            <button 
-              onClick={() => updateURL({ page: Math.max(1, page - 1) })}
-              disabled={page <= 1}
-            >
-              Previous
-            </button>
-            <span style={{ margin: '0 10px' }}>Page {page}</span>
-            <button 
-              onClick={() => updateURL({ page: page + 1 })}
-              disabled={!data.hasMore}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
-      
-      {data && data.data.length === 0 && (
-        <div>No advocates found matching your criteria.</div>
-      )}
+        </div>
+      ) : null}
     </main>
   );
 }

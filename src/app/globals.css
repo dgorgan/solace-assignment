@@ -1,3 +1,153 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Base tokens + utility classes */
+@layer base {
+  :root {
+    --primary-default: #1d4339;
+    --primary-focused: #285e50;
+    --primary-selected: #347866;
+    --gold: #d7a13b;
+    --accent-gold-light: #e9cc95;
+    --accent-mid-opal: #d4e2dd4d;
+    --opal: #d4e2dd;
+    --green-100: #f4f8f7;
+    --neutral-white: #fff;
+    --neutral-black: #101010;
+    --neutral-dark-grey: #5a5a5a;
+  }
+  .bg-surface { background: var(--green-100); }
+  .text-primary { color: var(--primary-default); }
+  .text-gold { color: var(--gold); }
+  /* Next/font: use variable names set in layout.tsx */
+  .font-display { font-family: var(--font-display), ui-serif, Georgia, serif; }
+}
+
+/* Component-level utilities built with Tailwind tokens */
+@layer components {
+  .card { @apply rounded-xl border bg-white shadow-lg; }
+  .muted { @apply text-sm text-gray-600; }
+  .chip { 
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium;
+    background: var(--primary-focused);
+    color: var(--neutral-white);
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  @media (max-width: 640px) {
+    .chip {
+      font-size: 0.65rem;
+      padding: 0.25rem 0.5rem;
+      line-height: 1.2;
+    }
+  }
+
+  /* Hero Primary Button - Main CTA */
+  .btn-hero-primary {
+    color: var(--neutral-black);
+    text-align: center;
+    background-color: var(--gold);
+    background-image: linear-gradient(45deg, #deb260, #d39009);
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 4.5rem;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 150%;
+    transition: bottom 0.2s, box-shadow 0.2s, background-image 0.2s;
+    position: relative;
+    bottom: 0;
+    box-shadow: 0 2px 17px 2px #afc8bf4d, inset 0 2px 4.7px #fff6;
+    cursor: pointer;
+  }
+  
+  .btn-hero-primary:hover {
+    -webkit-text-fill-color: inherit;
+    background-image: linear-gradient(45deg, #3f937c, #d4e2dd4d 100%, #deb260);
+    background-clip: border-box;
+    position: relative;
+    bottom: 4px;
+    box-shadow: 3px 0 17px 2px #afc8bf4d, inset 0 3px 4.7px #fff6;
+  }
+
+  /* Primary Button - Gold gradient (default primary style) */
+  .btn-primary {
+    border: 2px solid var(--accent-gold-light);
+    color: var(--neutral-black);
+    text-align: center;
+    background-color: var(--gold);
+    background-image: linear-gradient(45deg, #deb260, #d39009);
+    border-radius: 10px;
+    padding: 0.45rem 2rem;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 150%;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    bottom: 0;
+    box-shadow: inset 0 2px 4.7px #fff6;
+    cursor: pointer;
+  }
+  
+  .btn-primary:hover {
+    background-image: linear-gradient(86deg, var(--accent-gold-light) 49%, #e9cc95);
+    -webkit-text-fill-color: inherit;
+    mix-blend-mode: normal;
+    background-clip: border-box;
+    bottom: 4px;
+    box-shadow: 3px 0 17px 2px #afc8bf4d, inset 0 3px 4.7px #fff6;
+  }
+
+  /* Secondary Button - Green outlined style */
+  .btn-secondary {
+    border: 3px solid var(--accent-mid-opal);
+    background-color: var(--primary-focused);
+    color: var(--neutral-white);
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 0.45rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 150%;
+    transition: background-color 0.2s;
+    cursor: pointer;
+  }
+  
+  .btn-secondary:hover {
+    background-color: var(--primary-selected);
+  }
+
+
+
+  /* Base button class */
+  .btn {
+    @apply inline-flex items-center justify-center font-medium;
+    @apply focus-visible:outline-none; /* ring handled by .focus-brand below */
+  }
+
+  .input {
+    @apply w-full rounded-md border border-gray-300 px-3 py-2;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.03);
+  }
+  
+  .table-header {
+    background: var(--primary-default);
+    color: var(--neutral-white);
+  }
+  
+  .hero-section {
+    background: var(--primary-default);
+    color: var(--neutral-white);
+  }
+}
+
+/* Use plain CSS for a variable-colored focus ring */
+.focus-brand:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-focused);
+}
