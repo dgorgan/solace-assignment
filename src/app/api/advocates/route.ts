@@ -12,7 +12,11 @@ import {
   type SortColumn 
 } from "../../../features/advocates/constants";
 
+const err = (message: string, status = 400) =>
+  Response.json({ error: { message } }, { status });
+
 export async function GET(request: Request) {
+  try {
   const { searchParams } = new URL(request.url);
   
   // Parse query parameters with defaults and validation
@@ -23,7 +27,10 @@ export async function GET(request: Request) {
   const dirParam = parseDir(searchParams.get('dir'));
   
   // Whitelist sort columns
-  const sort: SortColumn = SORTABLE_COLUMNS.includes(sortParam as SortColumn) ? sortParam as SortColumn : DEFAULT_SORT;
+  if (sortParam && !SORTABLE_COLUMNS.includes(sortParam as SortColumn)) {
+    return err(`Invalid sort column. Must be one of: ${SORTABLE_COLUMNS.join(', ')}`);
+  }
+  const sort: SortColumn = (sortParam as SortColumn) || DEFAULT_SORT;
   const dir = dirParam || DEFAULT_DIR;
 
   // Normalize raw data at API boundary
@@ -81,4 +88,8 @@ export async function GET(request: Request) {
       'Cache-Control': 'public, max-age=30, stale-while-revalidate=60'
     }
   });
+  } catch (error) {
+    console.error('Advocates API error:', error);
+    return err('Internal server error', 500);
+  }
 }

@@ -27,7 +27,7 @@ export async function fetchAdvocates(params: AdvocatesQuery): Promise<AdvocatesR
   const res = await fetch(`/api/advocates?${qs.toString()}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({} as any));
-    throw new Error(body?.message || `Failed to fetch advocates (${res.status})`);
+    throw new Error(body?.error?.message || body?.message || `Failed to fetch advocates (${res.status})`);
   }
   return res.json();
 }
