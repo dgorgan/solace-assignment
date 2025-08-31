@@ -1,3 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Base tokens + utility classes */
+@layer base {
+  :root {
+    --brand: #175C52;
+    --brand-600: #1E6B5E;
+    --accent: #E6B34A;
+    --surface: #F7FAF9;
+    --chip-bg: #4A9B8E;
+  }
+  .bg-surface { background: var(--surface); }
+  .text-brand { color: var(--brand); }
+  /* Next/font: use variable names set in layout.tsx */
+  .font-display { font-family: var(--font-display), ui-serif, Georgia, serif; }
+}
+
+/* Component-level utilities built with Tailwind tokens */
+@layer components {
+  .card { @apply rounded-xl border bg-white shadow-lg; }
+  .muted { @apply text-sm text-gray-600; }
+  .chip { 
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium;
+    background: var(--chip-bg);
+    color: white;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md border px-3 py-2 font-medium transition-colors;
+    @apply focus-visible:outline-none; /* ring handled by .focus-brand below */
+  }
+  .btn-primary {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+    @apply hover:opacity-90;
+  }
+  .btn-ghost { 
+    @apply border border-gray-300 hover:bg-gray-50 text-gray-700;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-gray-300 px-3 py-2;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.03);
+  }
+  
+  .table-header {
+    background: var(--brand);
+    color: white;
+  }
+}
+
+/* Use plain CSS for a variable-colored focus ring */
+.focus-brand:focus-visible {
+  box-shadow: 0 0 0 2px var(--brand-600);
+}
